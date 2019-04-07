@@ -3,21 +3,28 @@ provider "aws" {
   region     = "ap-south-1"
 }
 
-data "aws_ami" "node_app_ami" {
-  most_recent = true
+data "aws_ami" "example" {
+  executable_users = ["self"]
+  most_recent      = true
+  name_regex       = "^myami-\\d{3}"
+  owners           = ["self"]
 
   filter {
-    name   = "name"
-    values = ["packer-example*"]
+    name = "name"
+    values = ["myami-*"]
   }
 
   filter {
-    name   = "virtualization-type"
+    name = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name = "virtualization-type"
     values = ["hvm"]
   }
-
-  owners = ["099720109477"]
 }
+
 
 resource "aws_launch_configuration" "node_app_lc" {
   image_id      = "${data.aws_ami.node_app_ami.id}"
